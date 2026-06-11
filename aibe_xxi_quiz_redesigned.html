@@ -1,0 +1,379 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+#wrap{font-family:var(--font-sans);padding:1.5rem 0}
+.hero{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem}
+.hero-icon{width:48px;height:48px;border-radius:var(--border-radius-md);background:#E6F1FB;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hero-icon i{font-size:24px;color:#185FA5}
+.hero-title{font-size:18px;font-weight:500;color:var(--color-text-primary)}
+.hero-sub{font-size:13px;color:var(--color-text-secondary);margin-top:2px}
+.controls{display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center}
+.set-btn{padding:7px 14px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-secondary);font-size:13px;cursor:pointer;font-family:var(--font-sans);transition:all 0.15s}
+.set-btn.active{background:#E6F1FB;border-color:#185FA5;color:#0C447C;font-weight:500}
+.set-btn:hover:not(.active){background:var(--color-background-secondary)}
+.ctrl-input{font-size:13px;padding:7px 10px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);width:105px;font-family:var(--font-sans)}
+.ctrl-btn{padding:7px 13px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-secondary);font-size:13px;cursor:pointer;display:flex;align-items:center;gap:5px;font-family:var(--font-sans)}
+.ctrl-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.ctrl-btn.accent{background:#E6F1FB;border-color:#185FA5;color:#0C447C}
+.ctrl-btn.accent:hover{background:#B5D4F4}
+.stats-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:1.25rem}
+.stat{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;text-align:center}
+.stat-num{font-size:20px;font-weight:500;color:var(--color-text-primary)}
+.stat-lbl{font-size:11px;color:var(--color-text-secondary);margin-top:1px;text-transform:uppercase;letter-spacing:0.04em}
+.prog-wrap{margin-bottom:1.25rem}
+.prog-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--color-text-secondary);margin-bottom:5px}
+.prog-track{height:5px;background:var(--color-background-secondary);border-radius:3px;overflow:hidden;border:0.5px solid var(--color-border-tertiary)}
+.prog-fill{height:100%;background:#378ADD;border-radius:3px;transition:width 0.4s}
+.q-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem 1.5rem;margin-bottom:1rem}
+.q-tag{display:inline-flex;align-items:center;gap:5px;background:#E6F1FB;color:#0C447C;font-size:11px;font-weight:500;padding:3px 9px;border-radius:var(--border-radius-md);margin-bottom:0.75rem;letter-spacing:0.03em}
+.q-text{font-size:14px;font-weight:500;color:var(--color-text-primary);line-height:1.65;margin-bottom:1.1rem}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);cursor:pointer;background:var(--color-background-primary);transition:background 0.12s,border-color 0.12s;font-size:13px;color:var(--color-text-primary);line-height:1.5;text-align:left;width:100%;font-family:var(--font-sans)}
+.opt:hover:not(.disabled){background:var(--color-background-secondary);border-color:var(--color-border-secondary)}
+.opt-lbl{width:22px;height:22px;border-radius:50%;border:0.5px solid var(--color-border-secondary);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;margin-top:1px;color:var(--color-text-secondary);transition:all 0.12s}
+.opt.correct{background:#EAF3DE;border-color:#3B6D11}
+.opt.correct .opt-lbl{background:#3B6D11;border-color:#3B6D11;color:#fff}
+.opt.correct .opt-txt{color:#27500A}
+.opt.wrong{background:#FCEBEB;border-color:#A32D2D}
+.opt.wrong .opt-lbl{background:#A32D2D;border-color:#A32D2D;color:#fff}
+.opt.wrong .opt-txt{color:#791F1F}
+.opt.show-correct{background:#EAF3DE;border-color:#3B6D11}
+.opt.show-correct .opt-lbl{background:#3B6D11;border-color:#3B6D11;color:#fff}
+.opt.show-correct .opt-txt{color:#27500A}
+.opt.disabled{cursor:default;pointer-events:none}
+.reveal{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);margin-top:0.75rem;font-size:13px;color:var(--color-text-secondary);line-height:1.55;border-left:3px solid #378ADD;border-top-left-radius:0;border-bottom-left-radius:0}
+.reveal i{font-size:16px;color:#185FA5;flex-shrink:0;margin-top:1px}
+.nav-row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.nav-btn{padding:8px 16px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:var(--font-sans);transition:background 0.12s}
+.nav-btn:hover:not(:disabled){background:var(--color-background-secondary)}
+.nav-btn:disabled{opacity:0.35;cursor:default}
+.nav-btn.primary{background:#378ADD;border-color:#378ADD;color:#fff}
+.nav-btn.primary:hover{background:#185FA5;border-color:#185FA5}
+.q-dot-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:1.25rem}
+.q-dot{width:20px;height:20px;border-radius:4px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);cursor:pointer;font-size:9px;color:var(--color-text-secondary);display:flex;align-items:center;justify-content:center;transition:all 0.12s}
+.q-dot:hover{border-color:var(--color-border-secondary);background:var(--color-background-secondary)}
+.q-dot.active{background:#378ADD;border-color:#378ADD;color:#fff}
+.q-dot.correct-d{background:#EAF3DE;border-color:#3B6D11;color:#27500A}
+.q-dot.wrong-d{background:#FCEBEB;border-color:#A32D2D;color:#791F1F}
+.results-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:2rem 1.5rem;text-align:center}
+.big-pct{font-size:56px;font-weight:500;color:var(--color-text-primary);line-height:1}
+.results-sub{font-size:14px;color:var(--color-text-secondary);margin-top:6px}
+.grade-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 18px;border-radius:var(--border-radius-md);font-size:14px;font-weight:500;margin:1rem 0}
+.results-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:1.25rem 0}
+</style>
+
+<div id="wrap">
+  <h2 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">AIBE XXI practice quiz — 100 multiple choice questions with instant feedback</h2>
+
+  <div class="hero">
+    <div class="hero-icon"><i class="ti ti-scale" aria-hidden="true"></i></div>
+    <div>
+      <div class="hero-title">AIBE XXI — Practice Quiz</div>
+      <div class="hero-sub">All India Bar Examination · 7 June 2026 · 100 questions · No negative marking</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <span style="font-size:12px;color:var(--color-text-secondary);letter-spacing:0.04em;text-transform:uppercase">Set</span>
+    <button class="set-btn active" onclick="switchSet('A',this)">A</button>
+    <button class="set-btn" onclick="switchSet('B',this)">B</button>
+    <button class="set-btn" onclick="switchSet('C',this)">C</button>
+    <button class="set-btn" onclick="switchSet('D',this)">D</button>
+    <input class="ctrl-input" type="number" id="jmp" min="1" max="100" placeholder="Jump to Q#">
+    <button class="ctrl-btn" onclick="doJump()"><i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+    <button class="ctrl-btn" onclick="resetQuiz()"><i class="ti ti-refresh" aria-hidden="true"></i> Restart</button>
+    <button class="ctrl-btn accent" onclick="goResults()"><i class="ti ti-chart-bar" aria-hidden="true"></i> Results</button>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat"><div class="stat-num" id="s-answered">0</div><div class="stat-lbl">Answered</div></div>
+    <div class="stat"><div class="stat-num" id="s-correct" style="color:#3B6D11">0</div><div class="stat-lbl">Correct</div></div>
+    <div class="stat"><div class="stat-num" id="s-wrong" style="color:#A32D2D">0</div><div class="stat-lbl">Wrong</div></div>
+    <div class="stat"><div class="stat-num" id="s-pct">0%</div><div class="stat-lbl">Accuracy</div></div>
+  </div>
+
+  <div class="prog-wrap">
+    <div class="prog-meta"><span id="prog-txt">0 of 100 completed</span><span id="prog-pct">0%</span></div>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="q-dot-row" id="dot-row"></div>
+
+  <div id="main-area"></div>
+</div>
+
+<script>
+const AK={A:[,'A','C','B','B','A','D','A','A','D','C','A','D','D','C','C','D','A','D','C','A','C','B','D','A','A','C','D','D','D','C','A','A','D','D','D','C','A','B','A','B','D','D','B','C','B','D','C','A','B','D','A','B','C','B','C','C','B','A','C','C','B','D','A','B','A','A','D','A','C','C','B','C','B','C','B','A','C','C','B','A','B','A','B','B','D','C','D','C','C','B','B','A','B','D','C','D','B','D','D','A'],B:[,'D','A','C','B','C','D','C','D','D','D','C','A','D','B','A','C','D','B','C','B','C','B','A','A','B','A','B','B','A','C','A','B','C','A','C','D','D','C','A','B','B','C','B','C','B','C','A','B','B','B','D','B','B','A','C','A','B','A','D','B','A','B','A','B','C','D','A','B','A','A','B','A','D','C','D','C','D','D','D','C','C','A','A','A','A','D','C','C','D','A','D','D','C','D','D','C','B','B','C','C'],C:[,'B','A','A','D','C','A','B','B','C','C','B','D','A','D','C','C','A','A','C','B','D','A','D','A','B','B','C','B','B','B','B','A','D','A','A','C','B','D','A','B','B','C','A','A','D','D','A','D','B','D','B','B','C','B','B','B','B','C','A','A','B','A','C','C','C','C','C','D','D','B','D','D','A','A','A','C','C','A','A','B','C','A','B','A','A','B','C','A','A','B','C','C','A','C','A','B','A','C','C','C'],D:[,'A','A','D','B','A','B','B','B','C','D','B','C','A','D','B','B','B','A','A','D','C','B','D','D','A','D','A','D','B','B','A','C','B','B','C','D','B','B','C','B','B','C','D','A','B','C','A','B','C','B','A','D','D','D','A','D','A','B','A','C','A','B','C','C','A','A','D','D','A','A','B','A','D','C','C','C','A','A','A','C','A','B','A','C','B','A','C','B','B','B','A','A','A','A','B','B','C','B','C','A']};
+
+const QS={A:[
+[1,"In the following question, a Statement is followed by two Conclusions, I and II.\n\nStatement: Section 5 of the Minimum Wages Act, 1948 gives a detailed procedure for fixing or revising minimum wages in respect of any scheduled employment. After considering the advice of the committees appointed, and all representations received by it before the date notified in the Gazette notification, the appropriate Government may by notification in the official gazette, fix or revise the minimum rates of wages.\n\nConclusion I: If a date is specified in the notification, the minimum rates shall come into force from such date.\n\nConclusion II: If no date is specified, then they shall come into force from the expiry of three months from the date of issue of the notification.\n\nWhich one of the following is correct?",["Both Conclusions I and II follow","Only Conclusion II follows","Neither Conclusion I nor II follows","Only Conclusion I follows"]],
+[2,"As per the Consumer Protection Act, 2019, what are one-sided agreements?",["Unilateral contracts","Quasi contracts","Unfair trade practices","Unconscionable"]],
+[3,"Assertion (A): The Constitution of India does not adopt a rigid separation of powers among the Legislature, Executive and Judiciary.\nReason (R): The constitutional framework incorporates a system of checks and balances, allowing limited functional overlap among the organs of the State.\nWhich one of the following is correct?",["(A) is false, but (R) is true","Both (A) and (R) are true, and (R) is the correct explanation of (A)","(A) is true, but (R) is false","Both (A) and (R) are true, but (R) is not the correct explanation of (A)"]],
+[4,"Under the Constitution of India, consider the following statements in the context of constitutional amendments:\nI. Judicial review extends to constitutional amendments.\nII. Laws inserted into the Ninth Schedule after 24th April, 1973 remain open to scrutiny for violation of the basic structure.\nIII. Parliament's amending power under Article 368 is unlimited.\nWhich of the above statements is/are correct?",["I, II and III","I and II","II and III","I only"]],
+[5,"In execution proceedings governed by the Code of Civil Procedure, 1908, where property of the judgment-debtor is attached and a third party raises a claim asserting independent title, such claim:",["Shall be adjudicated by the executing court","Requires prior determination by the court which passed the decree","Must be decided by instituting a separate civil suit","Can be decided only after completion of execution proceedings"]],
+[6,"Which provision of the CrPC, 1973, provides a summary legal remedy for maintenance of spouses, children, and parents who are unable to support themselves?",["Section 320","Section 107","Section 144","Section 125"]],
+[7,"Under the law relating to land acquisition in India, which of the following statements is NOT true?",["All persons interested in the land in question shall appear personally before the Collector","A minimum notice period of 30 days is to be given to all the persons interested","The Collector shall publish the public notice on his website","Such interested persons may file objections within 6 months of the notice having been issued"]],
+[8,"Regarding the offence of 'Criminal Conspiracy' as defined under Section 120A of the IPC, 1860, which of the following statements is legally accurate?",["The mere agreement between parties is sufficient to constitute the offence if the intended crime is punishable by death or rigorous imprisonment","A minimum of five persons must participate to satisfy the legal definition","A solitary individual's mere intention to commit a crime, even without an agreement with others, is sufficient for a conviction","It is a substantive offence that is legally barred from being charged in conjunction with other substantive crimes"]],
+[9,"Assertion (A): The respondent was engaged as a Safai Karamchari in a charitable trust. The trust challenged the award on the grounds that it was not an 'industry' under Section 2(j) of the Industrial Disputes Act, 1947.\nReason (R): The trust engaged in multifarious activities including commercial ventures in an organized manner with proper remuneration.\nWhich one of the following is correct?",["Both (A) and (R) are true, but (R) is not the correct explanation of (A)","(A) is true, but (R) is false","(A) is false, but (R) is true","Both (A) and (R) are true, and (R) is the correct explanation of (A)"]],
+[10,"Which of the following is included in the Central Government's power under Section 3(2)(ii) of the Environment (Protection) Act, 1986?",["Collection and dissemination of information in respect of matters relating to environmental pollution","Laying down standards for the quality of the environment in its various aspects","Planning and execution of a nation-wide programme for the prevention, control and abatement of environmental pollution","Carrying out and sponsoring investigations and research relating to problems of environmental pollution"]],
+[11,"Under the Information Technology Act, 2000, the term 'electronic record' includes which of the following?\nI. Data stored in digital form.\nII. Image or sound stored or transmitted electronically.\nIII. Information generated in microfilm or computer-generated microfiche.\nIV. Information recorded only on paper without electronic processing.\nWhich of the above are correct?",["I, II and III","II, III and IV","I, II, III and IV","I and II"]],
+[12,"In the context of the Constitution of India, a pension scheme differentiates between employees retiring before and after a specified cut-off date. Those excluded challenge the classification as arbitrary. The constitutional issue would primarily attract:",["Legislative competence of the State","Doctrine of eclipse","Doctrine of severability","Article 14 and the principle of classification"]],
+[13,"The Supreme Court of India in Harish Chandra Tiwari v. Baiju, (2002) 2 SCC 67, while considering the appropriate punishment for misappropriation of a client's money by an advocate, held that:",["A monetary penalty equal to double the amount misappropriated is the appropriate sanction","Reprimand is the appropriate punishment for first-time misappropriation","Suspension from practice for five years is the standard sanction","Misappropriation of a client's money constitutes one of the gravest forms of professional misconduct and ordinarily warrants removal of the advocate's name from the State roll"]],
+[14,"A State Government plans to acquire 50 acres of Scheduled Tribes (ST) land for an industrial park. Steps proposed: (i) Preliminary notification, (ii) Social Impact Assessment (SIA), (iii) Gram Sabha consultation/consent, (iv) Final notification. Which of the following statements is correct?",["Final notification can be issued without Gram Sabha, with owner consent only","Gram Sabha is advisory only; consent is not needed for public projects","SIA and Gram Sabha consultation/consent are mandatory for ST land; acquisition can't proceed without consent","Final notification can come before SIA but after preliminary notification"]],
+[15,"Under the CrPC, 1973, which specific provision provides the legal definition for a 'Bailable Offence'?",["Section 2(h)","Section 2(x)","Section 2(a)","Section 2(c)"]],
+[16,"The Information Technology Act, 2000, distinguishes between civil liability and criminal liability. In which of the following situations would such conduct attract criminal punishment rather than mere compensation?",["When the damage to computer resources exceeds a prescribed monetary limit","When the affected party chooses to initiate criminal proceedings","When access to a computer system is without permission, irrespective of intent","When the act is done dishonestly or fraudulently in addition to unauthorised access"]],
+[17,"In accordance with the provisions of the CPC, 1908, where a court while examining pleadings finds certain averments to be unnecessary and capable of prejudicing or delaying the fair trial, the court may:",["Strike out such pleadings at any stage of proceedings","Ignore such pleadings without passing any order","Direct amendment only after trial begins","Reject the plaint in entirety"]],
+[18,"On which specific date did the Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023, officially come into force, replacing the CrPC, 1973?",["August 15, 2023","January 1, 2024","December 25, 2023","July 1, 2024"]],
+[19,"Which is the landmark case which expanded the scope of Article 23 of the Constitution of India?",["Glaxo Laboratories v. Presiding Officer, Labour Court, Meerut, (1984) 1 SCC 1","Vishaka v. State of Rajasthan, (1997) 6 SCC 241","PUDR v. Union of India, (1982) 3 SCC 235","M.C. Mehta v. State of Tamil Nadu, (1996) 6 SCC 756"]],
+[20,"The case of Parmanand Katara v. Union of India (1989) is primarily associated with which of the following rights?",["Right to emergency medical care","Right to clean and healthy environment","Right to speedy trial","Right to life and personal liberty"]],
+[21,"Statement: The Bar Council of India derives its rule-making power from Section 49(1)(c) of the Advocates Act, 1961. Rule 20 bars an advocate from receiving any fee dependent upon the outcome of litigation.\nConclusion I: An advocate may lawfully enter into an outcome-linked fee arrangement so long as the client's written consent is obtained.\nConclusion II: An advocate who violates the prohibition on contingency-based fees may face disciplinary action.\nWhich one of the following is correct?",["Neither Conclusion I nor II follows","Both Conclusions I and II follow","Only Conclusion II follows","Only Conclusion I follows"]],
+[22,"Under the constitutional framework of India, the Supreme Court gradually relaxed the traditional rule of locus standi, thereby allowing public-spirited individuals to approach the Court for enforcement of fundamental rights of others. This development is most closely associated with:",["Judicial review of administrative action","The evolution of Public Interest Litigation","Expansion of writ jurisdiction under Article 226","Enforcement of fundamental rights through individual petitions alone"]],
+[23,"Under the CPC, 1908, where a suit is instituted against a person who is subsequently found to have been wrongly impleaded as a defendant, the court may:",["Return the plaint on the ground of mis-joinder of parties","Dismiss the suit as not maintainable","Direct the plaintiff to institute a fresh suit","Permit substitution or addition of the proper defendant"]],
+[24,"The Bharatiya Sakshya Adhiniyam, 2023 is NOT applicable in which case?",["Arbitral Tribunal","National Company Law Tribunal","National Green Tribunal","Income Tax Appellate Tribunal"]],
+[25,"Under the BNS, 2023, 'Forfeiture of Property' is listed as a punishment. In which specific case is this most commonly applied?",["Organized Crime (Section 111)","Offences involving simple hurt or minor physical injury","Instances of minor or petty theft","Cases of rash or negligent driving"]],
+[26,"Which of the following statements is NOT an example of the eggshell skull rule as per the law of torts?",["Nervous shock cases are also consistent with this principle","A boy kicked another from across the aisle; the victim had an unknown microbial condition resulting in him losing use of his leg","'A' underwent an appendectomy; a needle was left inside her abdomen leading to further surgeries","A man had a heart attack and died after being bruised in the chest during a rear-end car accident"]],
+[27,"Read the following statements:\nStatement I: Ossification test is the final test to analyze bone fusion for estimating the age of a juvenile as per law.\nStatement II: Statutory documents like a birth certificate will be given precedence to determine the juvenile.\nWhich one of the following is correct?",["Both Statements I and II are true","Only Statement I is true","Both Statements I and II are false","Only Statement II is true"]],
+[28,"Under constitutional jurisprudence in India, repeated re-promulgation of Ordinances without placing them before the Legislature was described by the Supreme Court as a 'fraud on the Constitution' in which decision?",["Krishna Kumar Singh v. State of Bihar, (2017) 3 SCC 1","R.C. Cooper v. Union of India, AIR 1970 SC 564","Shamsher Singh v. State of Punjab, AIR 1974 SC 2192","D.C. Wadhwa v. State of Bihar, AIR 1987 SC 579"]],
+[29,"Pursuant to Section 378 of the IPC, 1860, which of the following constitutes an essential element of the offence of 'Theft'?",["The requirement that the property must be removed from a public location exclusively","The unauthorized movement of immovable property without the owner's consent","The employment of physical force or criminal violence against a person","The movement of movable property out of a person's possession without their consent"]],
+[30,"Whether a landowner who enters into a Joint Development Agreement contributing land in exchange for 50% of the developed property can file a complaint under the Consumer Protection Act, 2019? Which statement is most accurate?",["The landowner is a consumer unless profit motive is proven","The landowner is a consumer as he did not construct himself","The landowner is not a consumer as the transaction constitutes a commercial joint venture","The landowner is a consumer if defects exist, irrespective of the nature of the transaction"]],
+[31,"Under Rule 8 of the Standards of Professional Conduct and Etiquette framed by the Bar Council of India, an advocate is prohibited from appearing before any court, tribunal or authority for or against an organisation or institution of which he is a member of its:",["Executive Committee","General Body","Sub-Committee","Advisory Committee"]],
+[32,"A Magistrate of the Second Class passes a sentence of one month's imprisonment. The accused wants to appeal. Based on the CrPC, 1973, which of the following is true?",["The accused is entitled to file an appeal before the Court of Session","An appeal lies only if a fine was also imposed","The accused may prefer an appeal directly to the High Court","No appeal is maintainable in this specific instance"]],
+[33,"Under the Parsi Marriage and Divorce Act, 1936, for what duration can maintenance be awarded?",["For a fixed term not exceeding ten years","For a maximum of five years only","For a period determined solely by the Registrar","For a term not exceeding the life of the plaintiff"]],
+[34,"Under the Special Marriage Act, 1954, what is the maximum fine that may be imposed for printing or publishing matter in contravention of provisions relating to in-camera proceedings?",["Fine up to five thousand rupees","Fine up to two thousand rupees","Fine up to five hundred rupees","Fine up to one thousand rupees"]],
+[35,"Under Section 362 of the IPC, 1860, which of the following is NOT a mandatory legal requirement to constitute the offence of 'Abduction'?",["Compelling or inducing a person to move from one place to another","The employment of physical force or the use of deceitful means","The classification of the act as a 'continuing offence'","The person abducted must be a minor"]],
+[36,"Under the Constitution of India, Parliament enacts legislation to implement India's obligations under an international environmental agreement. The subject falls within the State List and no resolution under Article 252 has been passed. The source of Parliament's competence would be:",["Article 252","Article 249","Article 253","Article 250"]],
+[37,"Read the following statements in the light of the Arbitration and Conciliation Act, 1996.\nStatement I: The arbitral tribunal may rule on its own jurisdiction.\nStatement II: A plea that the tribunal lacks jurisdiction shall be raised not later than the submission of the statement of defence.\nWhich one of the following is correct?",["Both Statements I and II are true","Neither Statement I nor Statement II is true","Only Statement I is true","Only Statement II is true"]],
+[38,"Under Section 105 of the BNSS, 2023, what is now a mandatory requirement for the process of search and seizure conducted by the police?",["The presence of a Judicial Magistrate during the search","The documentation of the entire search and seizure process via audio-video electronic recording","The presence of at least five local residents as independent witnesses","The acquisition of a signed written confession from the occupant of the premises"]],
+[39,"Under the provisions of the CPC, 1908, where a decree is passed against multiple defendants, one of whom was not served with summons and had no opportunity to contest, such a defendant may seek relief:",["By applying for setting aside the ex-parte decree","Only by filing a separate suit","Only through an appeal against decree","Only through review before the same court"]],
+[40,"In Roman jurisprudence, the concept similar to the Rule of Law was referred to as:",["Jus Gentium","Jus Naturale","Lex Regia","Jus Civile"]],
+[41,"According to Section 10(37) of the Income-tax Act, 1961, compensation received by an individual on compulsory acquisition of agricultural land which had been used for agricultural purposes prior to acquisition. What is the correct legal position?",["It is always taxable under the Act","It is taxable only if it exceeds a prescribed limit","It is taxable as business income","It is exempt, subject to fulfilment of prescribed conditions"]],
+[42,"Under the CPC, 1908, where proceedings are pending before a competent civil court, and an application is made seeking transfer of the case from one district to another district within the state, such transfer may be ordered:",["Only upon agreement between the parties","Only by the court in which the suit is pending","Only after conclusion of trial","By the High Court"]],
+[43,"Ramesh's job contract with M/s XYZ bars him from joining any rival software firm in India for three years post-resignation. But he joins a competitor. XYZ company filed a suit to enforce the restrictive clause. Under the Indian Contract Act, 1872, what is the legal position?",["Valid – three years is a reasonable period","Void – restrains lawful profession after employment ends","Valid – Ramesh agreed voluntarily","Valid – protects the employer's business interest"]],
+[44,"A contracts with B to construct a cold storage facility for ₹50 lakh within 6 months. B fails to perform. A hires C to complete at ₹60 lakh and files a suit against B claiming ₹10 lakh. Which of the following statements is correct under the Specific Relief Act, 1963?",["A must sue only for damages and not substituted performance","A can recover ₹10 lakh because B breached the contract","A cannot recover the cost because A did not give B prior notice","A can recover only if the court first declares B guilty of breach"]],
+[45,"The BNSS, 2023, has introduced a specific timeframe for the delivery of a judgment after the conclusion of arguments. What is that timeframe?",["Within a strict period of 15 days","Within 30 days (extendable to 45 days)","Within 90 days, provided the reasons for delay are recorded","Within 60 days from the date of reserving the order"]],
+[46,"The term 'Public Interest Litigation (PIL)' was first used by:",["Justice P.N. Bhagwati","Justice V.R. Krishna Iyer","Prof. Upendra Baxi","Prof. Abram Chayes"]],
+[47,"In which of the following cases did Lord Wright observe that 'the incalculable value of habeas corpus is that it enables the immediate determination of the applicant's freedom'?",["Attorney General for Hong Kong v. Ng Yuen Shiu (1983) 2 AC 629","Attorney General for New South Wales v. Trethowan (1932) AC 526","Greene v. Secretary of State for Home Affairs (1942) AC 284","Bugdaycay v. Secretary of State for the Home Department (1987) AC 514"]],
+[48,"Under the provisions of the BNS, 2023, what is the current range of punishments available to a court for the offence of 'Defamation'?",["Simple imprisonment, or fine, or both, or Community Service","Rigorous imprisonment for 5 years","Only a fine","Only an apology in open court"]],
+[49,"Under the Indian Christian Marriage Act, 1872, between which hours must a marriage generally be solemnized?",["Between five in the morning and six in the evening","Between six in the morning and seven in the evening","Between seven in the morning and eight in the evening","Between six in the morning and nine in the evening"]],
+[50,"Which of the following statements are correct with reference to withdrawal and abandonment of suits under the CPC, 1908?\nI. A plaintiff may withdraw or abandon a suit subject to the provisions of law.\nII. Institution of a fresh suit on the same cause of action requires permission of the court.\nIII. Withdrawal of a suit without permission bars a subsequent suit on the same cause of action.\nIV. The court must grant permission whenever such request is made.\nWhich of the above statements are correct?",["I, III and IV","I, II, III and IV","II, III and IV","I, II and III"]],
+[51,"According to Section 25(b) of the Arbitration and Conciliation Act, 1996, where the respondent fails to submit his statement of defence without sufficient cause, the arbitral tribunal shall:",["Continue the proceedings without treating such failure as admission","Proceed to decide the dispute treating the claimant's case as uncontroverted","Terminate the proceedings","Treat the claimant's allegations as admitted"]],
+[52,"Which of the following innovative penal measures has been officially incorporated into the sentencing framework under Section 4 of the BNS, 2023?",["Compulsory forfeiture of ancestral property","Community Service","Solitary confinement","Life imprisonment without the possibility of parole"]],
+[53,"Under the scheme of the Constitution of India, once a Proclamation under Article 352 is in operation, Parliament may legislate on matters in the State List by virtue of:",["Article 356","Article 249","Article 250","Article 360"]],
+[54,"A, an 18-year-old adult of sound mind, executes a written instrument in favour of B stating, 'I promise to pay B ₹75,000 on 1st April next year.' A is fully competent, has signed the note. B sues A for recovery after 1st April when A defaults. Examine the correct legal position.",["The promissory note is valid only if a third party signs as witness","The promissory note is valid; A is liable to pay B","The promissory note is void because it does not mention the consideration","The promissory note is voidable at A's option since A is only 18 years of age"]],
+[55,"The adoption of an Ombudsman-type institution in India was first recommended by which of the following?",["Administrative Reforms Commission, 2005","Santhanam Committee, 1964","Administrative Reforms Commission, 1966","India Against Corruption Movement, 2011"]],
+[56,"Which of the following options correctly states the composition of a Disciplinary Committee of a Bar Council as prescribed under Section 9(1) of the Advocates Act, 1961?",["Five members — three elected by the Council and two co-opted senior advocates from outside the Council","Five members — all co-opted from advocates having not less than ten years' standing at the Bar","Three members — two elected from the Council's membership and one co-opted advocate possessing the prescribed qualifications, who is not a member of the Council","Three members — all elected by the Council, with the most junior member serving as Chairman"]],
+[57,"According to the CPC, 1908, where a suit has abated due to failure to bring legal representatives on record within the prescribed time, the court may set aside such abatement if the plaintiff shows:",["That the defendant had knowledge of death","Sufficient cause for not making the application within time","That decree has not yet been passed","Error apparent on the face of record"]],
+[58,"What year did the mandatory pre-fitment of High Security Registration Plates (HSRP) for all new vehicles come into effect under the Motor Vehicles Act, 1988?",["2019","2018","2024","2023"]],
+[59,"A, aged 80 years, executes a registered deed transferring land to a trust for maintaining a public library forever. If the property ceases to be used for this purpose, it shall revert to heirs. The income shall accumulate for 50 years before being used for expansion. Which statement is most accurate in law?",["The transfer is void because it violates the rule against perpetuity and the condition of accumulation beyond permissible limits","The entire transfer is void because the reversionary clause creates uncertainty and violates public policy","The transfer is valid as it falls within the exception for public benefit, but the accumulation clause is void to the extent it exceeds statutory limits","The transfer is valid in entirety, including the accumulation clause, because transfers for public purposes are fully exempt from all perpetuity-related restrictions"]],
+[60,"Under the Uniform Civil Code Rules Uttarakhand, 2025, when is an application for declaration of legal heir(s) forwarded to the Registrar General?",["After thirty days of receipt if the Registrar does not take action","After ten days of receipt if the Registrar does not take action","After fifteen days of receipt if the Registrar does not take action","None of the above"]],
+[61,"Under Section 35B of the CPC, 1908, where a party fails to take a step required by the court on the date fixed, the court may:",["Grant adjournment as a matter of right","Impose costs as a precondition for allowing further prosecution","Dismiss the suit","Proceed with the suit without imposing any condition"]],
+[62,"Which provision of the CrPC, 1973, stipulates that a police officer must produce a person arrested without a warrant before a Magistrate within a maximum period of 24 hours?",["Section 41","Section 164","Section 51","Section 57"]],
+[63,"During an India-Country X war, India declares X an enemy. A (an Indian citizen) enters into a contract to supply medicines to B (a citizen of X) via a neutral intermediary and a bank. Which of the following is most accurate under the Indian Contract Act, 1872?",["Void – trading with an enemy in war is prohibited and is against public policy","Valid – goods are humanitarian and payment is via a neutral country","Voidable – only the Government of India can cancel","Valid unless the Government expressly cancels"]],
+[64,"Under Article 143 of the Constitution of India, the President may seek the opinion of the Supreme Court on questions of law or fact of public importance. The opinion rendered by the Court in such a reference is generally regarded as:",["Enforceable through contempt jurisdiction","Advisory in nature and not strictly binding","A binding precedent under Article 141","Equivalent to a decree of the Court"]],
+[65,"A executes a document in favour of B stating, 'I hereby sell my house to B for ₹5,00,000. If I repay the amount within 3 years, B shall retransfer the property to me; otherwise, the sale shall become absolute.' A fails to repay within 3 years. B claims absolute ownership. Examine the correct legal position under the Transfer of Property Act, 1882.",["It is a mortgage by conditional sale; B must seek foreclosure through court","The transaction is void for uncertainty","It is a lease with an option to repurchase","It is an outright sale; B becomes absolute owner automatically"]],
+[66,"Section 233 of the Companies Act, 2013, deals with 'fast track merger'. What is the time duration and the concerned authority for approval?",["60-90 Days, Regional Director","45-90 Days, NCLAT","60-90 Days, NCLT","1 Year, Regional Director"]],
+[67,"Judicial intervention in arbitration proceedings is limited under Section 5 of the Arbitration and Conciliation Act, 1996. In which of the following situations may a court intervene?",["When procedural irregularity is alleged without specific provision under the Act","When both parties request supervision of proceedings","When the court considers the award unjust on facts","When the Act expressly permits such intervention"]],
+[68,"Ajeet Singh, a famous singer, enters into a contract with Yash Aditya Music Company agreeing to perform exclusively for them for 2 years. After one year, Ajeet Singh refuses to perform and begins performing for BR Chopra & Company. Yash Aditya files a suit seeking injunction. Which of the following statements is correct under the Specific Relief Act, 1963?",["The injunction may be granted to enforce the negative covenant","The injunction must be refused because contracts of personal service cannot be enforced","The court must compel Ajeet Singh to sing for Yash Aditya Music Company","Only damages can be granted"]],
+[69,"Under Section 167 of the CrPC, 1973, 'Default Bail' (or statutory bail) is a right of the accused if the investigation is not completed:",["After a fixed period of 30 days for all types of offences","Upon the expiry of 120 days specifically for offences against the State","After 60 days or 90 days, contingent upon the maximum punishment prescribed for the offence","Immediately following the completion of the initial 15-day police custody"]],
+[70,"Which of the following Articles of the Constitution of India forms the primary legislative basis for the Parliament enacting the Air (Prevention and Control of Pollution) Act, 1981?",["Article 252","Article 233","Article 253","None of the above"]],
+[71,"Under the Guardians and Wards Act, 1890, what condition applies for appointing a guardian for a married female minor?",["The husband must be declared legally incompetent","The husband must be considered unfit by the Court","The parents must apply jointly for such appointment","The husband must consent to such appointment"]],
+[72,"Under the Dowry Prohibition Act, 1961, within how many months from the date of marriage must dowry received before marriage be transferred to the woman?",["Within six months","Within seven months","Within three months","Within five months"]],
+[73,"An assessee pays a medical insurance premium for himself and his family and claims a deduction while computing total income. What is the correct position under the Income Tax Act, 1961?",["Deduction is not permitted in such cases","Deduction is allowed subject to prescribed limits and conditions","Deduction is allowed without any monetary limit","Deduction is allowed only for senior citizens"]],
+[74,"Under the IPC, 1860, in which of the following scenarios does the 'Right of Private Defence of the Body' extend to the extent of voluntarily causing death to the assailant?",["A simple assault committed without the use of a weapon","A case of theft where the value of the stolen property exceeds ₹10,000","An assault committed with the specific intention of kidnapping or abducting a person","An act of criminal trespass occurring on open, vacant land"]],
+[75,"Under Section 173 of the BNSS, 2023, if a police officer-in-charge determines that an investigation is not warranted because the case lacks sufficient gravity, they are legally obligated to notify the informant of this decision within:",["24 hours","14 days","7 days","30 days"]],
+[76,"X takes a loan of ₹10,00,000 from Bank A. Y signs a contract as surety. After 3 months, Bank A agrees to reduce the interest rate and extends the repayment period by 6 months without informing Y. Subsequently, X defaults. Which of the following statements correctly describes Y's liability under the Indian Contract Act, 1872?",["Y is partially discharged from liability because Bank A's modification increased the risk to Y without his consent","Y is fully liable for the entire loan because a surety is always liable once the principal debtor defaults","Y is not liable at all because the principal debtor defaulted after the contract modification","Y is liable only if the bank sues the principal debtor first, regardless of the modification"]],
+[77,"Which of the following does NOT fall under the framework of presumption under Section 2 of the Bharatiya Sakshya Adhiniyam, 2023?",["Conclusive proof","Shall presume","Unassailable proof","Maybe"]],
+[78,"Assertion (A): The right to privacy has been judicially recognised as an integral part of Article 21 of the Constitution of India.\nReason (R): Privacy is expressly enumerated as a separate Fundamental Right in Part III of the Constitution of India.\nWhich one of the following is correct?",["(A) is false, but (R) is true","Both (A) and (R) are true, and (R) is the correct explanation of (A)","(A) is true, but (R) is false","Both (A) and (R) are true, but (R) is not the correct explanation of (A)"]],
+[79,"Under the scheme of distribution of legislative powers in the Constitution of India, a subject which is not enumerated in either the State List or the Concurrent List falls within the residuary field of legislation. Such residuary power is vested in:",["The State Legislatures","The Parliament","The President of India","The Supreme Court of India"]],
+[80,"'The rules of natural justice were not confined to the narrow precincts of the prevailing definition of quasi-judicial functions.' This principle was laid down in which case?",["Ridge v. Baldwin (1964) A.C. 40","Conway v. Rimmer (1968) A.C. 910","Maradana Mosque Trustees v. Mahmud (1967) (1) A.C. 13","A.K. Kraipak v. Union of India AIR 1970 SC 150"]],
+[81,"'Administrative law is the law concerning the powers and procedures of administrative agencies, including especially the law governing judicial review of administrative action.' This definition was given by:",["Ivor Jennings","K.C. Davis","A.V. Dicey","H.W.R. Wade"]],
+[82,"The five Golden Principles with respect to Circumstantial Evidence were laid down in which Supreme Court Judgment?",["Sharad Birdhichand Sarda v. State of Maharashtra, 1984 AIR 1622","Dudh Nath Pandey v. State of U.P., 1981 SCC (2) 166","Vasa Chandrasekhar Rao v. Ponna Satyanarayana & Anr., 2000 AIR SC 2138","Dr. Sunil Clifford Daniel v. State of Punjab (2012) 11 SCC 205"]],
+[83,"According to Section 20 of the Arbitration and Conciliation Act, 1996, where the parties have not agreed on the place of arbitration, the arbitral tribunal shall determine it having regard to:",["Place where the contract was executed","Circumstances of the case, including the convenience of the parties","Jurisdiction of the civil court alone","Location of subject matter of dispute"]],
+[84,"Under the Dowry Prohibition Act, 1961, what is the minimum term of imprisonment prescribed for giving or taking dowry?",["Not less than ten years","Not less than five years","Not less than three years","Not less than seven years"]],
+[85,"Assertion (A): An ex parte decree may be set aside if the defendant satisfies the court that he was prevented by sufficient cause from appearing when the suit was called for hearing.\nReason (R): Under Order IX Rule 13 of the CPC, 1908, the court must be satisfied that the summons was not duly served or that the defendant was prevented by sufficient cause from appearing.\nWhich one of the following is correct?",["Both (A) and (R) are true, but (R) is not the correct explanation of (A)","(A) is true, but (R) is false","(A) is false, but (R) is true","Both (A) and (R) are true and (R) is the correct explanation of (A)"]],
+[86,"Under which specific provision of the BNS, 2023, has the definition of a 'Terrorist Act' been formally integrated into India's general penal legislation for the first time?",["Section 152","Section 109","Section 113","Section 121"]],
+[87,"According to the provisions of the BNSS, 2023, an accused person intending to apply for 'Plea Bargaining' must do so within how many days following the formal framing of charges?",["7 days","15 days","60 days","30 days"]],
+[88,"Assertion (A): Income-tax is levied on the total income of a person for the previous year.\nReason (R): Income earned during the previous year is assessed to tax in the immediately succeeding assessment year under the Income-tax Act, 1961.\nWhich one of the following is correct?",["Both (A) and (R) are true, but (R) is not the correct explanation of (A)","(A) is false, but (R) is true","Both (A) and (R) are true and (R) is the correct explanation of (A)","(A) is true, but (R) is false"]],
+[89,"Which of the following is NOT stated in Section 63(4) of the Bharatiya Sakshya Adhiniyam, 2023, with regard to a certificate to verify the authenticity of electronic evidence?",["Signed by both the person in charge of the computer or communication device and an expert, with the certificate adhering to the format prescribed in the Adhiniyam's Schedule","The form specified in the Schedule requires that electronic evidence be accompanied by a 'hash value'","Qualification of an expert","None of the above"]],
+[90,"A mandatory PUC Certificate is provided under which Section and Rule?",["Section 120(3) of the Motor Vehicles Act, 1988 and Rules 122 and 123 of the Centre Motor Vehicles Rules, 1989","Section 190(2) of the Motor Vehicles Act, 1988 and Rules 115 and 116 of the Centre Motor Vehicles Rules, 1989","Section 160(1) of the Motor Vehicles Act, 1988 and Rules 109 and 110 of the Centre Motor Vehicles Rules, 1989","Section 177(3) of the Motor Vehicles Act, 1988 and Rules 117 and 118 of the Centre Motor Vehicles Rules, 1989"]],
+[91,"Under the Patents Act, 1970, a patent is granted to an inventor in India. Which of the following correctly reflects a limitation on the patentee's rights under the law?",["The patentee loses all rights once the invention is used by the Government","The Government may use the invention for its own purposes without the consent of the patentee","The invention cannot be used by the Government without permission","The patent becomes void if used by a government authority"]],
+[92,"What do you mean by 'onus probandi'?",["'Burden of proof' which places the responsibility on the party making an affirmative claim to substantiate it with evidence","'The fact to be proved' or the 'ultimate fact' that needs to be established in a legal case","The prosecution in a criminal case must prove beyond a reasonable doubt, not only a criminal act, but also a certain level of a guilty mind (mens rea)","Actual evidence, documents, or witnesses presented to substantiate that claim"]],
+[93,"Statement: Allegations have been made by Minority Shareholders that ABC's promoters sold preference shares to a trust at prices significantly below fair market value.\nConclusion I: Minority Shareholders can file for class action under Section 245 of the Companies Act, 2013.\nConclusion II: The aggrieved members may proceed individually under Section 241 of the Companies Act, 2013.\nWhich one of the following is correct?",["Neither Conclusion I nor II follows","Both Conclusions I and II follow","Only Conclusion II follows","Only Conclusion I follows"]],
+[94,"According to Section 56(2)(x) of the Income-tax Act, 1961, if an individual receives a sum of money, without consideration, from a person other than a relative, and the amount exceeds the prescribed limit. What is the correct legal position?",["It is fully exempt from tax","It is taxable only if received in cash","It is treated as a capital receipt and is not taxable","It is taxable under the head 'Income from Other Sources'"]],
+[95,"Under the Copyright Act, 1957:\nStatement I: In the case of a posthumous literary work, copyright subsists for sixty years from the beginning of the calendar year next following the year in which the work is first published.\nStatement II: For such works, publication refers to making the work available to the public by issue of copies or by communication to the public.\nWhich one of the following is correct?",["Both Statements I and II are false","Only Statement II is true","Both Statements I and II are true","Only Statement I is true"]],
+[96,"Which of the following statements is NOT true with respect to Section 65B of the Indian Evidence Act, 1872?",["The requirement of a certificate under Section 65B(4) is a condition precedent to the admissibility of an electronic record in evidence","Arjun Panditrao Khotkar v. Kailash Kushanrao Gorantyal, (2020) 7 SCC 1 – landmark judgment stands as the latest interpretation offering a consistent approach in line with the legislative intent","In P.V. Anvar v. P.K. Basheer, the court held that Section 65B is a 'complete code' for electronic evidence","In State (NCT of Delhi) v. Navjot Sandhu, AIR 2005 SC 3820, the Supreme Court held that courts could admit electronic records as prima facie evidence without authentication"]],
+[97,"Which of the following is NOT included in 'The Industrial Relations Code, 2020'?",["Trade Unions Act, 1926","Industries (Development and Regulation) Act, 1951 (IDR Act)","Industrial Disputes Act, 1947","Industrial Employment (Standing Orders) Act, 1946"]],
+[98,"Which of the following is NOT a document as per the Bharatiya Sakshya Adhiniyam, 2023?",["Caricature","Map","Inscription","Private papers"]],
+[99,"As per the CPC, 1908, where the plaintiff in a civil suit fails to pay the requisite court fee or postal charges for service of summons within the time permitted by the court, the court may:",["Stay the proceedings until service is effected","Proceed to decide the suit on merits","Return the plaint for fresh presentation","Dismiss the suit"]],
+[100,"Under the Hindu Adoptions and Maintenance Act, 1956, which situation makes the consent of a wife unnecessary for adoption?",["She has ceased to be a Hindu by conversion","She refuses consent due to personal disagreement","She is living separately without legal separation","None of the above"]]
+]};
+
+let cSet='A',qs=[],cur=0,answered={},score=0,wrong=0;
+const LBLS=['A','B','C','D'];
+
+function gc(qn){return AK[cSet][qn];}
+
+function loadSet(s){
+  cSet=s;qs=QS[s]||QS.A;
+  answered={};score=0;wrong=0;cur=0;
+  buildDots();render();updateStats();
+}
+
+function buildDots(){
+  const row=document.getElementById('dot-row');
+  row.innerHTML=qs.map((_,i)=>`<div class="q-dot" id="dot-${i+1}" onclick="goQ(${i})">${i+1}</div>`).join('');
+}
+
+function updateDot(qn,result){
+  const d=document.getElementById('dot-'+qn);
+  if(!d)return;
+  d.className='q-dot '+(result==='correct'?'correct-d':'wrong-d');
+  document.querySelectorAll('.q-dot').forEach((el,i)=>{
+    if(i===cur)el.classList.add('active');
+  });
+}
+
+function setActiveDot(){
+  document.querySelectorAll('.q-dot').forEach((el,i)=>{
+    if(i===cur)el.classList.add('active');
+    else el.classList.remove('active');
+  });
+}
+
+function goQ(i){cur=i;render();setActiveDot();}
+
+function updateStats(){
+  const att=Object.keys(answered).length;
+  const pct=att>0?Math.round((score/att)*100):0;
+  document.getElementById('s-answered').textContent=att;
+  document.getElementById('s-correct').textContent=score;
+  document.getElementById('s-wrong').textContent=wrong;
+  document.getElementById('s-pct').textContent=pct+'%';
+  const p=Math.round((att/qs.length)*100);
+  document.getElementById('prog-fill').style.width=p+'%';
+  document.getElementById('prog-txt').textContent=att+' of '+qs.length+' completed';
+  document.getElementById('prog-pct').textContent=p+'%';
+}
+
+function render(){
+  const q=qs[cur];
+  if(!q)return;
+  const qn=q[0],text=q[1],opts=q[2];
+  const ans=answered[qn];
+  const correct=gc(qn);
+  const ci=LBLS.indexOf(correct);
+  setActiveDot();
+
+  const optsHtml=opts.map((o,i)=>{
+    const lbl=LBLS[i];
+    let cls='opt';
+    if(ans){
+      cls+=' disabled';
+      if(lbl===ans&&lbl===correct)cls+=' correct';
+      else if(lbl===ans&&lbl!==correct)cls+=' wrong';
+      else if(lbl===correct)cls+=' show-correct';
+    }
+    return `<button class="${cls}" onclick="choose('${lbl}',${qn})">
+      <span class="opt-lbl">${lbl}</span>
+      <span class="opt-txt">${o}</span>
+    </button>`;
+  }).join('');
+
+  const revealHtml=ans?`<div class="reveal"><i class="ti ti-info-circle" aria-hidden="true"></i><span>Correct answer: <strong>${correct} — ${opts[ci]}</strong></span></div>`:'';
+  const formattedText=text.replace(/\n/g,'<br>');
+
+  document.getElementById('main-area').innerHTML=`
+    <div class="q-card">
+      <div class="q-tag"><i class="ti ti-help-circle" style="font-size:13px" aria-hidden="true"></i> Question ${cur+1} of ${qs.length}</div>
+      <div class="q-text">${formattedText}</div>
+      <div class="opts">${optsHtml}</div>
+      ${revealHtml}
+    </div>
+    <div class="nav-row">
+      <button class="nav-btn" onclick="prev()" ${cur===0?'disabled':''}>
+        <i class="ti ti-arrow-left" aria-hidden="true"></i> Previous
+      </button>
+      <div style="display:flex;gap:6px">
+        ${!ans?`<button class="nav-btn" onclick="skipQ(${qn})" style="color:var(--color-text-secondary)"><i class="ti ti-player-skip-forward" aria-hidden="true"></i> Skip</button>`:''}
+      </div>
+      <button class="nav-btn ${cur===qs.length-1?'primary':''}" onclick="next()" ${cur===qs.length-1?'':''}> 
+        ${cur===qs.length-1?'See results':'Next <i class="ti ti-arrow-right" aria-hidden="true"></i>'}
+      </button>
+    </div>`;
+}
+
+function choose(lbl,qn){
+  if(answered[qn])return;
+  const correct=gc(qn);
+  answered[qn]=lbl;
+  if(lbl===correct)score++;
+  else wrong++;
+  updateStats();
+  updateDot(qn,lbl===correct?'correct':'wrong');
+  render();
+}
+
+function skipQ(qn){
+  cur<qs.length-1?next():goResults();
+}
+
+function prev(){if(cur>0){cur--;render();setActiveDot();}}
+function next(){if(cur<qs.length-1){cur++;render();setActiveDot();}else goResults();}
+
+function switchSet(s,el){
+  document.querySelectorAll('.set-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  loadSet(s);
+}
+
+function doJump(){
+  const n=parseInt(document.getElementById('jmp').value)-1;
+  if(n>=0&&n<qs.length){goQ(n);document.getElementById('jmp').value='';}
+}
+
+function resetQuiz(){
+  loadSet(cSet);
+}
+
+function goResults(){
+  const att=Object.keys(answered).length;
+  const pct=att>0?Math.round((score/att)*100):0;
+  const total_pct=Math.round((score/qs.length)*100);
+  let grade,gcol,gbg;
+  if(pct>=75){grade='Pass';gcol='#27500A';gbg='#EAF3DE';}
+  else if(pct>=45){grade='Borderline';gcol='#633806';gbg='#FAEEDA';}
+  else{grade='Fail';gcol='#791F1F';gbg='#FCEBEB';}
+
+  document.getElementById('main-area').innerHTML=`
+    <div class="results-card">
+      <div style="margin-bottom:1rem">
+        <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em">Your score</div>
+        <div class="big-pct">${score}<span style="font-size:24px;color:var(--color-text-secondary)"> / ${qs.length}</span></div>
+        <div class="results-sub">${att} attempted · ${qs.length-att} skipped</div>
+      </div>
+      <div class="grade-pill" style="background:${gbg};color:${gcol}">
+        <i class="ti ti-${pct>=45?'circle-check':'circle-x'}" style="font-size:16px" aria-hidden="true"></i>
+        ${grade} · ${pct}% accuracy
+      </div>
+      <div class="results-stats">
+        <div class="stat"><div class="stat-num" style="color:#3B6D11">${score}</div><div class="stat-lbl">Correct</div></div>
+        <div class="stat"><div class="stat-num" style="color:#A32D2D">${wrong}</div><div class="stat-lbl">Wrong</div></div>
+        <div class="stat"><div class="stat-num">${qs.length-att}</div><div class="stat-lbl">Skipped</div></div>
+      </div>
+      <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 14px;font-size:13px;color:var(--color-text-secondary);margin-bottom:1.25rem;display:flex;gap:8px;align-items:center">
+        <i class="ti ti-info-circle" style="font-size:16px;color:#185FA5;flex-shrink:0" aria-hidden="true"></i>
+        AIBE passing threshold: 45% for General category · 40% for SC/ST/PH
+      </div>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <button class="nav-btn" onclick="reviewAnswers()"><i class="ti ti-eye" aria-hidden="true"></i> Review answers</button>
+        <button class="nav-btn primary" onclick="resetQuiz()"><i class="ti ti-refresh" aria-hidden="true"></i> Try again</button>
+      </div>
+    </div>`;
+}
+
+function reviewAnswers(){cur=0;render();setActiveDot();}
+
+document.getElementById('jmp').addEventListener('keydown',function(e){if(e.key==='Enter')doJump();});
+
+loadSet('A');
+</script>
